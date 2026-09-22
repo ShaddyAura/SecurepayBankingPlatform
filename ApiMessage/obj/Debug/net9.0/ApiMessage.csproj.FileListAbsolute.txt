@@ -1,0 +1,11 @@
+E:\DigitalBankingPlatform\ApiMessage\bin\Debug\net9.0\ApiMessage.deps.json
+E:\DigitalBankingPlatform\ApiMessage\bin\Debug\net9.0\ApiMessage.dll
+E:\DigitalBankingPlatform\ApiMessage\bin\Debug\net9.0\ApiMessage.pdb
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.GeneratedMSBuildEditorConfig.editorconfig
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.AssemblyInfoInputs.cache
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.AssemblyInfo.cs
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.csproj.CoreCompileInputs.cache
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.dll
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\refint\ApiMessage.dll
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ApiMessage.pdb
+E:\DigitalBankingPlatform\ApiMessage\obj\Debug\net9.0\ref\ApiMessage.dll
