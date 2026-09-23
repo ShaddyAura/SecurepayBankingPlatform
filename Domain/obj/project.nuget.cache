@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rrNDflcVMsE=",
+  "dgSpecHash": "D778k+8502k=",
   "success": true,
-  "projectFilePath": "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
+  "projectFilePath": "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ramar\\.nuget\\packages\\dapper\\2.1.79\\dapper.2.1.79.nupkg.sha512"
   ],

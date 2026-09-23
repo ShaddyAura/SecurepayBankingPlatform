@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "DigitalBankingPlatform\\DigitalBankingPlatform.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "DigiWeb\\DigiWeb.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

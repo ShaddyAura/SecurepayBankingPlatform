@@ -11,41 +11,38 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------------------------------------------------------------
-// Database — Dapper Context
-// ---------------------------------------------------------------
+// CORS — allow Blazor frontend origins
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorPolicy", policy =>
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
 builder.Services.AddSingleton<DapperContext>();
-
-// ---------------------------------------------------------------
-// Generic Repository
-// ---------------------------------------------------------------
 builder.Services.AddScoped<IGenericRepository, GenericRepository>();
-
-// ---------------------------------------------------------------
-// AutoMapper
-// ---------------------------------------------------------------
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AuthMappingProfile>());
-
-// ---------------------------------------------------------------
-// Services
-// ---------------------------------------------------------------
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// ---------------------------------------------------------------
-// JWT Authentication
-// ---------------------------------------------------------------
+// JWT
 var jwtKey      = builder.Configuration["Jwt:Key"]!;
 var jwtIssuer   = builder.Configuration["Jwt:Issuer"]!;
 var jwtAudience = builder.Configuration["Jwt:Audience"]!;
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(opt =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(opt =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    opt.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer           = true,
         ValidateAudience         = true,
@@ -54,65 +51,41 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer              = jwtIssuer,
         ValidAudience            = jwtAudience,
         IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-        ClockSkew                = TimeSpan.Zero
+        ClockSkew                = TimeSpan.Zero // no grace period on expiry
     };
 });
 
-// ---------------------------------------------------------------
-// Authorization — Role-Based Policies
-// ---------------------------------------------------------------
-builder.Services.AddAuthorization(options =>
+// Role-based policies
+builder.Services.AddAuthorization(opt =>
 {
-    options.AddPolicy("CustomerOnly",   policy => policy.RequireRole("Customer"));
-    options.AddPolicy("AdminOnly",      policy => policy.RequireRole("Admin"));
-    options.AddPolicy("AuditorOnly",    policy => policy.RequireRole("Auditor"));
-    options.AddPolicy("AdminOrAuditor", policy => policy.RequireRole("Admin", "Auditor"));
+    opt.AddPolicy("CustomerOnly",   p => p.RequireRole("Customer"));
+    opt.AddPolicy("AdminOnly",      p => p.RequireRole("Admin"));
+    opt.AddPolicy("AuditorOnly",    p => p.RequireRole("Auditor"));
+    opt.AddPolicy("AdminOrAuditor", p => p.RequireRole("Admin", "Auditor"));
 });
 
-// ---------------------------------------------------------------
-// Controllers
-// ---------------------------------------------------------------
 builder.Services.AddControllers();
-
-// ---------------------------------------------------------------
-// Swagger / OpenAPI with JWT Bearer support
-// ---------------------------------------------------------------
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title       = "SecurePay — Digital Banking API",
-        Version     = "v1",
-        Description = "Real-Time Fund Transfer & Digital Banking Platform",
-        Contact     = new OpenApiContact
-        {
-            Name  = "SecurePay Team",
-            Email = "dev@securepay.com"
-        }
-    });
 
-    // Add JWT Bearer auth to Swagger UI
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+// Swagger with JWT bearer
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SecurePay API", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name         = "Authorization",
         Type         = SecuritySchemeType.Http,
         Scheme       = "Bearer",
         BearerFormat = "JWT",
         In           = ParameterLocation.Header,
-        Description  = "Enter your JWT token below. Example: eyJhbGci..."
+        Description  = "Paste your JWT token here"
     });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id   = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
@@ -121,21 +94,19 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// ---------------------------------------------------------------
-// Middleware Pipeline
-// ---------------------------------------------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    app.UseSwaggerUI(opt =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "SecurePay API v1");
-        options.RoutePrefix = string.Empty; // Swagger opens at root: http://localhost:PORT/
-        options.DocumentTitle = "SecurePay API";
+        opt.SwaggerEndpoint("/swagger/v1/swagger.json", "SecurePay API v1");
+        opt.RoutePrefix   = string.Empty; // Swagger at root
+        opt.DocumentTitle = "SecurePay API";
     });
 }
 
 app.UseHttpsRedirection();
+app.UseCors("BlazorPolicy"); // must be before Auth
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -1,0 +1,120 @@
+@page "/"
+@layout MainLayout
+@rendermode InteractiveServer
+
+<PageTitle>DigiTransfer — Fast . Secure . Reliable</PageTitle>
+
+<div class="home-hero">
+
+    <!-- Logo -->
+    <div class="hero-logo">
+        <div class="logo-icon">
+            <svg viewBox="0 0 60 60" width="60" height="60">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4FC3F7" />
+                        <stop offset="100%" style="stop-color:#00E5A0" />
+                    </linearGradient>
+                </defs>
+                <circle cx="30" cy="30" r="28" fill="none" stroke="url(#logoGrad)" stroke-width="3" />
+                <path d="M15 30 H38 M30 22 L40 30 L30 38" stroke="url(#logoGrad)" stroke-width="3"
+                      fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <div class="logo-text">
+            <span class="logo-digi">Digi</span><span class="logo-transfer">Transfer</span>
+        </div>
+    </div>
+
+    <!-- Tagline -->
+    <p class="hero-tagline">Fast &nbsp;.&nbsp; Secure &nbsp;.&nbsp; Reliable</p>
+
+    <!-- Feature Icons -->
+    <div class="hero-features">
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#4FC3F7" stroke-width="1.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <polyline points="9 12 11 14 15 10" />
+                </svg>
+            </div>
+            <span>Atomic Transactions</span>
+        </div>
+        <div class="feature-divider"></div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#4FC3F7" stroke-width="1.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+            </div>
+            <span>Row-Level Locking</span>
+        </div>
+        <div class="feature-divider"></div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#4FC3F7" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+            </div>
+            <span>Ledger Entry</span>
+        </div>
+    </div>
+
+    <!-- Transfer Visual -->
+    <div class="transfer-visual">
+
+        <!-- From Phone -->
+        <div class="phone-card from-card">
+            <div class="phone-avatar">
+                <svg viewBox="0 0 40 40" width="40" height="40">
+                    <circle cx="20" cy="14" r="7" fill="#4FC3F7" opacity="0.8" />
+                    <path d="M6 36c0-8 6-13 14-13s14 5 14 13" fill="#4FC3F7" opacity="0.5" />
+                </svg>
+            </div>
+            <p class="phone-label">From Account</p>
+            <p class="phone-amount">$ 1,250.00</p>
+        </div>
+
+        <!-- Transfer Arrows -->
+        <div class="transfer-arrows">
+            <div class="arrow-line">
+                <div class="arrow-dot"></div>
+                <div class="arrow-line-inner"></div>
+            </div>
+            <div class="transfer-check">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                    <circle cx="12" cy="12" r="11" fill="#00E5A0" opacity="0.15" stroke="#00E5A0" stroke-width="1.5" />
+                    <polyline points="6 12 10 16 18 8" stroke="#00E5A0" stroke-width="2.5"
+                              stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="arrow-line">
+                <div class="arrow-line-inner"></div>
+                <div class="arrow-dot"></div>
+            </div>
+        </div>
+
+        <!-- To Phone -->
+        <div class="phone-card to-card">
+            <div class="phone-avatar">
+                <svg viewBox="0 0 40 40" width="40" height="40">
+                    <circle cx="20" cy="14" r="7" fill="#00E5A0" opacity="0.8" />
+                    <path d="M6 36c0-8 6-13 14-13s14 5 14 13" fill="#00E5A0" opacity="0.5" />
+                </svg>
+            </div>
+            <p class="phone-label">To Account</p>
+            <p class="phone-amount">$ 1,250.00</p>
+        </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="hero-cta">
+        <a href="/auth/login" class="btn-primary">Get Started</a>
+        <a href="/auth/register" class="btn-secondary">Create Account</a>
+    </div>
+
+</div>

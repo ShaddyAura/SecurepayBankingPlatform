@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "E:\\DigitalBankingPlatform\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{AE549D45-61E8-40C8-BEEE-D2624BA5E80A}|DigitalBankingPlatform\\DigitalBankingPlatform.csproj|e:\\digitalbankingplatform\\digitalbankingplatform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AE549D45-61E8-40C8-BEEE-D2624BA5E80A}|DigitalBankingPlatform\\DigitalBankingPlatform.csproj|solutionrelative:digitalbankingplatform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4753EB2E-2E4E-4808-900A-8CB2CC4BC2BE}|DigiWeb\\DigiWeb.csproj|e:\\digitalbankingplatform\\digiweb\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4753EB2E-2E4E-4808-900A-8CB2CC4BC2BE}|DigiWeb\\DigiWeb.csproj|solutionrelative:digiweb\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
@@ -58,10 +66,6 @@
       "RelativeMoniker": "D:0:0:{C8D8492F-74D9-4468-8926-6158E69A684E}|ApiMessage\\ApiMessage.csproj|solutionrelative:apimessage\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AE549D45-61E8-40C8-BEEE-D2624BA5E80A}|DigitalBankingPlatform\\DigitalBankingPlatform.csproj|e:\\digitalbankingplatform\\digitalbankingplatform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AE549D45-61E8-40C8-BEEE-D2624BA5E80A}|DigitalBankingPlatform\\DigitalBankingPlatform.csproj|solutionrelative:digitalbankingplatform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8F13098F-C9ED-4A51-BF78-05E0FFB85BED}|Application\\Application.csproj|e:\\digitalbankingplatform\\application\\application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{8F13098F-C9ED-4A51-BF78-05E0FFB85BED}|Application\\Application.csproj|solutionrelative:application\\application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
@@ -93,7 +97,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 19,
           "Children": [
             {
               "$type": "Bookmark",
@@ -121,18 +125,31 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "E:\\DigitalBankingPlatform\\DigiWeb\\Components\\_Imports.razor",
+              "RelativeDocumentMoniker": "DigiWeb\\Components\\_Imports.razor",
+              "ToolTip": "E:\\DigitalBankingPlatform\\DigiWeb\\Components\\_Imports.razor",
+              "RelativeToolTip": "DigiWeb\\Components\\_Imports.razor",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-23T11:37:03.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Microsoft.Common.CurrentVersion.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
               "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
-              "ViewState": "AgIAANoTAAAAAAAAAAAawOQTAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAANoTAAAAAAAAAAAawOkTAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
               "WhenOpened": "2026-09-22T15:07:44.768Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "launchSettings.json",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\DigitalBankingPlatform\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "DigitalBankingPlatform\\Properties\\launchSettings.json",
@@ -144,7 +161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "GenericRepository.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Infrastructure\\Repository\\GenericRepository.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Repository\\GenericRepository.cs",
@@ -156,7 +173,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "IGenericRepository.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Infrastructure\\Interfaces\\IGenericRepository.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Interfaces\\IGenericRepository.cs",
@@ -168,7 +185,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "DapperContext.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Infrastructure\\Dapper\\DapperContext.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Dapper\\DapperContext.cs",
@@ -180,7 +197,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "RefreshTokenDto.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\Interfaces\\RefreshTokenDto.cs",
               "RelativeDocumentMoniker": "Application\\Interfaces\\RefreshTokenDto.cs",
@@ -192,7 +209,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "LoginDto.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\DTOs\\Auth\\LoginDto.cs",
               "RelativeDocumentMoniker": "Application\\DTOs\\Auth\\LoginDto.cs",
@@ -204,7 +221,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "CustomerDto.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\DTOs\\Auth\\CustomerDto.cs",
               "RelativeDocumentMoniker": "Application\\DTOs\\Auth\\CustomerDto.cs",
@@ -216,7 +233,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "ChangePasswordDto.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\DTOs\\Auth\\ChangePasswordDto.cs",
               "RelativeDocumentMoniker": "Application\\DTOs\\Auth\\ChangePasswordDto.cs",
@@ -228,7 +245,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "AuthService.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\Services\\AuthService\\AuthService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\AuthService\\AuthService.cs",
@@ -240,7 +257,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "AuthMappingProfile.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\Mappings\\AuthMapping\\AuthMappingProfile.cs",
               "RelativeDocumentMoniker": "Application\\Mappings\\AuthMapping\\AuthMappingProfile.cs",
@@ -252,7 +269,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "IAuthService.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\Interfaces\\IAuthservice\\IAuthService.cs",
               "RelativeDocumentMoniker": "Application\\Interfaces\\IAuthservice\\IAuthService.cs",
@@ -264,19 +281,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\DigitalBankingPlatform\\Program.cs",
               "RelativeDocumentMoniker": "DigitalBankingPlatform\\Program.cs",
               "ToolTip": "E:\\DigitalBankingPlatform\\DigitalBankingPlatform\\Program.cs",
               "RelativeToolTip": "DigitalBankingPlatform\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADoAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-22T15:00:04.427Z"
+              "WhenOpened": "2026-09-22T15:00:04.427Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "Application.csproj",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Application\\Application.csproj",
               "RelativeDocumentMoniker": "Application\\Application.csproj",
@@ -289,7 +307,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 15,
               "Title": "ApiResponse.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\ApiMessage\\ApiResponse.cs",
               "RelativeDocumentMoniker": "ApiMessage\\ApiResponse.cs",
@@ -301,7 +319,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "ApiMessage.csproj",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\ApiMessage\\ApiMessage.csproj",
               "RelativeDocumentMoniker": "ApiMessage\\ApiMessage.csproj",
@@ -314,7 +332,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "AuthController.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\DigitalBankingPlatform\\Controllers\\Auth\\AuthController.cs",
               "RelativeDocumentMoniker": "DigitalBankingPlatform\\Controllers\\Auth\\AuthController.cs",
@@ -326,7 +344,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "appsettings.json",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\DigitalBankingPlatform\\appsettings.json",
               "RelativeDocumentMoniker": "DigitalBankingPlatform\\appsettings.json",
@@ -338,7 +356,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "Transaction.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Domain\\Entities\\Transaction.cs",
               "RelativeDocumentMoniker": "Domain\\Entities\\Transaction.cs",
@@ -350,7 +368,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "Customer.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Domain\\Entities\\Customer.cs",
               "RelativeDocumentMoniker": "Domain\\Entities\\Customer.cs",
@@ -362,7 +380,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "Account.cs",
               "DocumentMoniker": "E:\\DigitalBankingPlatform\\Domain\\Entities\\Account.cs",
               "RelativeDocumentMoniker": "Domain\\Entities\\Account.cs",

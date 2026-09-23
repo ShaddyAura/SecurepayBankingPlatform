@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JKEmAKDQ53s=",
+  "dgSpecHash": "8LxHc2NBKd0=",
   "success": true,
-  "projectFilePath": "E:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj",
+  "projectFilePath": "e:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ramar\\.nuget\\packages\\dapper\\2.1.79\\dapper.2.1.79.nupkg.sha512",
     "C:\\Users\\ramar\\.nuget\\packages\\microsoft.bcl.cryptography\\9.0.13\\microsoft.bcl.cryptography.9.0.13.nupkg.sha512",

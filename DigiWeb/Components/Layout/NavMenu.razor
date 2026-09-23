@@ -1,0 +1,58 @@
+@inject NavigationManager Nav
+
+<nav class="navbar">
+    <div class="navbar-brand" @onclick='() => Nav.NavigateTo("/")'>
+        <div class="nav-logo-icon">
+            <svg viewBox="0 0 40 40" width="36" height="36">
+                <defs>
+                    <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4FC3F7" />
+                        <stop offset="100%" style="stop-color:#00E5A0" />
+                    </linearGradient>
+                </defs>
+                <circle cx="20" cy="20" r="18" fill="none" stroke="url(#navGrad)" stroke-width="2.5" />
+                <path d="M10 20 H26 M20 14 L28 20 L20 26"
+                      stroke="url(#navGrad)" stroke-width="2.5"
+                      fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <span class="nav-logo-text">
+            <span class="logo-digi">Digi</span><span class="logo-transfer">Transfer</span>
+        </span>
+    </div>
+
+    <div class="navbar-links">
+        <NavLink href="/" Match="NavLinkMatch.All">Home</NavLink>
+        <NavLink href="/features">Features</NavLink>
+        <NavLink href="/how-it-works">How It Works</NavLink>
+        <NavLink href="/about">About</NavLink>
+    </div>
+
+    <div class="navbar-actions">
+        <NavLink href="/auth/login" class="nav-btn-login">Login</NavLink>
+        <NavLink href="/auth/register" class="nav-btn-register">Register</NavLink>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button class="nav-hamburger" @onclick="ToggleMenu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+@if (_menuOpen)
+{
+    <div class="mobile-menu">
+        <NavLink href="/"              @onclick="CloseMenu">Home</NavLink>
+        <NavLink href="/features"      @onclick="CloseMenu">Features</NavLink>
+        <NavLink href="/how-it-works"  @onclick="CloseMenu">How It Works</NavLink>
+        <NavLink href="/about"         @onclick="CloseMenu">About</NavLink>
+        <NavLink href="/auth/login"    @onclick="CloseMenu">Login</NavLink>
+        <NavLink href="/auth/register" @onclick="CloseMenu" class="nav-btn-register">Register</NavLink>
+    </div>
+}
+
+@code {
+    bool _menuOpen;
+    void ToggleMenu() => _menuOpen = !_menuOpen;
+    void CloseMenu()  => _menuOpen = false;
+}

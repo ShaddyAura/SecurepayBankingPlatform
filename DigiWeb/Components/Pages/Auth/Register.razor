@@ -1,0 +1,256 @@
+@page "/auth/register"
+@layout MainLayout
+@rendermode InteractiveServer
+@inject IAuthManager AuthManager
+@inject NavigationManager Nav
+
+<PageTitle>Register — DigiTransfer</PageTitle>
+
+<div class="register-page">
+
+    <!-- LEFT PANEL -->
+    <div class="register-left">
+        <div class="reg-left-logo">
+            <svg viewBox="0 0 50 50" width="52" height="52">
+                <defs>
+                    <linearGradient id="regGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4FC3F7" />
+                        <stop offset="100%" style="stop-color:#00E5A0" />
+                    </linearGradient>
+                </defs>
+                <circle cx="25" cy="25" r="23" fill="none" stroke="url(#regGrad)" stroke-width="2.5" />
+                <path d="M12 25 H32 M24 17 L34 25 L24 33"
+                      stroke="url(#regGrad)" stroke-width="2.5"
+                      fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="reg-brand">
+                <span class="logo-digi">Digi</span><span class="logo-transfer">Transfer</span>
+            </span>
+        </div>
+
+        <p class="reg-tagline">Fast &nbsp;•&nbsp; Secure &nbsp;•&nbsp; Reliable</p>
+
+        <p class="reg-desc">
+            Send and receive money with confidence.<br />
+            DigiTransfer makes your transactions simple,<br />
+            safe and seamless.
+        </p>
+
+        <div class="reg-features">
+            <div class="reg-feature-item">
+                <div class="reg-feature-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#4FC3F7" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="reg-feature-title">Instant Transfers</p>
+                    <p class="reg-feature-sub">Move money in seconds</p>
+                </div>
+            </div>
+            <div class="reg-feature-item">
+                <div class="reg-feature-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#4FC3F7" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="reg-feature-title">Bank-Level Security</p>
+                    <p class="reg-feature-sub">Your money, always protected</p>
+                </div>
+            </div>
+            <div class="reg-feature-item">
+                <div class="reg-feature-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#4FC3F7" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                        <line x1="12" y1="18" x2="12" y2="18" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="reg-feature-title">Access Anywhere</p>
+                    <p class="reg-feature-sub">On web and mobile</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transfer visual -->
+        <div class="reg-transfer-visual">
+            <div class="reg-phone from">
+                <div class="reg-phone-avatar blue"></div>
+                <p class="reg-phone-status">Sending...</p>
+                <p class="reg-phone-amount">$ 1,250.00</p>
+            </div>
+            <div class="reg-arrows">
+                <div class="reg-arrow-line"></div>
+                <div class="reg-check-badge">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                        <circle cx="12" cy="12" r="11" fill="#00E5A0" opacity="0.15" stroke="#00E5A0" stroke-width="1.5"/>
+                        <polyline points="6 12 10 16 18 8" stroke="#00E5A0" stroke-width="2.5"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="reg-arrow-line"></div>
+            </div>
+            <div class="reg-phone to">
+                <div class="reg-phone-avatar green"></div>
+                <p class="reg-phone-status">Received!</p>
+                <p class="reg-phone-amount">$ 1,250.00</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL — Registration Form -->
+    <div class="register-right">
+        <div class="reg-form-card">
+            <h1 class="reg-title">Create Your Account</h1>
+            <p class="reg-subtitle">
+                Join DigiTransfer and experience fast, secure and hassle-free money transfers.
+            </p>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="alert alert-error">@_errorMessage</div>
+            }
+            @if (!string.IsNullOrEmpty(_successMessage))
+            {
+                <div class="alert alert-success">@_successMessage</div>
+            }
+
+            <EditForm Model="_model" OnValidSubmit="HandleRegister" FormName="RegisterForm">
+                <DataAnnotationsValidator />
+
+                <!-- Name -->
+                <div class="reg-form-group">
+                    <label class="reg-label">Name</label>
+                    <div class="reg-input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <InputText class="reg-input" @bind-Value="_model.Name" placeholder="Enter your full name" />
+                    </div>
+                    <ValidationMessage For="@(() => _model.Name)" class="validation-message" />
+                </div>
+
+                <!-- Email -->
+                <div class="reg-form-group">
+                    <label class="reg-label">Email</label>
+                    <div class="reg-input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        <InputText class="reg-input" @bind-Value="_model.Email" placeholder="Enter your email address" type="email" />
+                    </div>
+                    <ValidationMessage For="@(() => _model.Email)" class="validation-message" />
+                </div>
+
+                <!-- Phone -->
+                <div class="reg-form-group">
+                    <label class="reg-label">Phone Number</label>
+                    <div class="reg-input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.37 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <InputText class="reg-input" @bind-Value="_model.PhoneNumber" placeholder="Enter your phone number" />
+                    </div>
+                    <ValidationMessage For="@(() => _model.PhoneNumber)" class="validation-message" />
+                </div>
+
+                <!-- Password -->
+                <div class="reg-form-group">
+                    <label class="reg-label">Password</label>
+                    <div class="reg-input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <InputText class="reg-input" @bind-Value="_model.Password"
+                                   placeholder="Create a strong password"
+                                   type="@(_showPassword ? "text" : "password")" />
+                        <button type="button" class="input-eye" @onclick="TogglePassword">
+                            @if (_showPassword)
+                            {
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            }
+                        </button>
+                    </div>
+                    <ValidationMessage For="@(() => _model.Password)" class="validation-message" />
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="reg-form-group">
+                    <label class="reg-label">Confirm Password</label>
+                    <div class="reg-input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9ab" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <InputText class="reg-input" @bind-Value="_model.ConfirmPassword"
+                                   placeholder="Confirm your password"
+                                   type="password" />
+                    </div>
+                    <ValidationMessage For="@(() => _model.ConfirmPassword)" class="validation-message" />
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="reg-btn-submit" disabled="@_loading">
+                    @if (_loading)
+                    {
+                        <span class="spinner"></span>
+                    }
+                    Register
+                </button>
+            </EditForm>
+
+            <div class="reg-divider"><span>OR</span></div>
+
+            <p class="reg-footer">
+                Already have an account? <a href="/auth/login">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly RegisterModel _model = new();
+    private string _errorMessage   = string.Empty;
+    private string _successMessage = string.Empty;
+    private bool   _loading;
+    private bool   _showPassword;
+
+    private async Task HandleRegister()
+    {
+        _loading        = true;
+        _errorMessage   = string.Empty;
+        _successMessage = string.Empty;
+
+        var (success, message) = await AuthManager.RegisterAsync(_model);
+
+        if (success)
+        {
+            _successMessage = message;
+            await Task.Delay(1500);
+            Nav.NavigateTo("/auth/login");
+        }
+        else
+        {
+            _errorMessage = message;
+        }
+
+        _loading = false;
+    }
+
+    private void TogglePassword() => _showPassword = !_showPassword;
+}

@@ -89,4 +89,4 @@ e:\DigitalBankingPlatform\DigitalBankingPlatform\bin\Debug\net9.0\DigitalBanking
 e:\DigitalBankingPlatform\DigitalBankingPlatform\obj\Debug\net9.0\DigitalB.9F1BFFF7.Up2Date
 e:\DigitalBankingPlatform\DigitalBankingPlatform\obj\Debug\net9.0\DigitalBankingPlatform.genruntimeconfig.cache
 e:\DigitalBankingPlatform\DigitalBankingPlatform\obj\Debug\net9.0\ref\DigitalBankingPlatform.dll
-E:\DigitalBankingPlatform\DigitalBankingPlatform\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+e:\DigitalBankingPlatform\DigitalBankingPlatform\obj\Debug\net9.0\swae.build.ex.cache

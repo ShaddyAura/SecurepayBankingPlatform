@@ -3,10 +3,6 @@
   "info": {
     "title": "SecurePay — Digital Banking API",
     "description": "Real-Time Fund Transfer & Digital Banking Platform",
-    "contact": {
-      "name": "SecurePay Team",
-      "email": "dev@securepay.com"
-    },
     "version": "v1"
   },
   "paths": {
@@ -511,7 +507,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Enter your JWT token below. Example: eyJhbGci...",
+        "description": "Enter your JWT token. Example: eyJhbGci...",
         "scheme": "Bearer",
         "bearerFormat": "JWT"
       }
