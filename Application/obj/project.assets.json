@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
     "net9.0": {
       "AutoMapper/16.2.0": {
@@ -1446,11 +1446,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\DigitalBankingPlatform\\Application\\Application.csproj",
+      "projectUniqueName": "E:\\DigitalBankingPlatform\\Application\\Application.csproj",
       "projectName": "Application",
-      "projectPath": "e:\\DigitalBankingPlatform\\Application\\Application.csproj",
+      "projectPath": "E:\\DigitalBankingPlatform\\Application\\Application.csproj",
       "packagesPath": "C:\\Users\\ramar\\.nuget\\packages\\",
-      "outputPath": "e:\\DigitalBankingPlatform\\Application\\obj\\",
+      "outputPath": "E:\\DigitalBankingPlatform\\Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1469,14 +1469,13 @@
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {
-              "projectPath": "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj"
+            "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {
+              "projectPath": "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj"
             },
-            "e:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "e:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj"
+            "E:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "E:\\DigitalBankingPlatform\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
@@ -1491,11 +1490,10 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0": {
-        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "AutoMapper": {
@@ -1535,7 +1533,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

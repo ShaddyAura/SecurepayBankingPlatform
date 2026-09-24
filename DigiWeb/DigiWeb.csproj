@@ -10,4 +10,8 @@
     <Folder Include="Manager\AuthManager\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
+  </ItemGroup>
+
 </Project>

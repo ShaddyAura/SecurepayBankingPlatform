@@ -1,0 +1,191 @@
+@page "/dashboard/transfer"
+@layout DashboardLayout
+@rendermode InteractiveServer
+@inject IDashboardManager DashboardManager
+@inject SessionManager    Session
+@inject NavigationManager Nav
+
+<PageTitle>Fund Transfer — DigiTransfer</PageTitle>
+
+<div class="dash-page">
+    <div class="dash-welcome-row">
+        <div>
+            <h1 class="dash-welcome-title">Fund Transfer</h1>
+            <p class="dash-welcome-sub">Transfer money securely to any DigiTransfer account.</p>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+        <div class="dash-left">
+
+            <!-- Transfer Form Card -->
+            <div class="section-card">
+                <h3 class="section-title">Transfer to Another Account</h3>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-error">@_errorMessage</div>
+                }
+                @if (!string.IsNullOrEmpty(_successMessage))
+                {
+                    <div class="alert alert-success">@_successMessage</div>
+                }
+
+                <EditForm Model="_transfer" OnValidSubmit="HandleTransfer" FormName="TransferForm">
+                    <DataAnnotationsValidator />
+
+                    <div class="tf-field" style="margin-bottom:1rem;">
+                        <label class="tf-label">Destination Account Number</label>
+                        <div class="tf-input-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9ab" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <InputText class="tf-input" @bind-Value="_transfer.ToAccountNumber" placeholder="Enter recipient account number" />
+                        </div>
+                        <ValidationMessage For="@(()=>_transfer.ToAccountNumber)" class="validation-message" />
+                    </div>
+
+                    <div class="tf-row" style="margin-bottom:1rem;">
+                        <div class="tf-field">
+                            <label class="tf-label">Amount (NPR)</label>
+                            <div class="tf-input-wrap">
+                                <InputNumber class="tf-input" @bind-Value="_transfer.Amount" placeholder="0.00" />
+                            </div>
+                            <ValidationMessage For="@(()=>_transfer.Amount)" class="validation-message" />
+                        </div>
+                        <div class="tf-field">
+                            <label class="tf-label">Description (Optional)</label>
+                            <div class="tf-input-wrap">
+                                <InputText class="tf-input" @bind-Value="_transfer.Description" placeholder="e.g. Rent, Invoice #123" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tf-field" style="margin-bottom:1.25rem;">
+                        <label class="tf-label">Idempotency Key (auto-generated)</label>
+                        <div class="tf-input-wrap">
+                            <InputText class="tf-input" @bind-Value="_transfer.IdempotencyKey" readonly style="opacity:0.6;" />
+                        </div>
+                    </div>
+
+                    <!-- From Account Info -->
+                    @if (_account is not null)
+                    {
+                        <div class="transfer-from-box">
+                            <div>
+                                <p class="tf-label">From Account</p>
+                                <p style="font-weight:700;color:var(--text-primary);">@_account.AccountNumber</p>
+                            </div>
+                            <div style="text-align:right;">
+                                <p class="tf-label">Available Balance</p>
+                                <p style="font-weight:700;color:#00C07F;">NPR @_account.Balance.ToString("N2")</p>
+                            </div>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn-transfer" disabled="@_loading">
+                        @if (_loading) { <span class="spinner"></span> }
+                        Confirm Transfer →
+                    </button>
+                </EditForm>
+            </div>
+
+            <!-- Recent Transfers -->
+            <div class="section-card">
+                <div class="rt-header">
+                    <h3 class="section-title" style="margin:0;">Recent Transfers</h3>
+                </div>
+                @if (_history is null)
+                {
+                    <div class="rt-skeleton"></div>
+                    <div class="rt-skeleton"></div>
+                    <div class="rt-skeleton"></div>
+                }
+                else if (!_history.Transactions.Any())
+                {
+                    <p class="tx-empty">No transactions yet.</p>
+                }
+                else
+                {
+                    @foreach (var tx in _history.Transactions.Take(5))
+                    {
+                        <div class="rt-item">
+                            <div class="rt-item-left">
+                                <div class="rt-dot @(tx.Direction == "Credit" ? "rt-credit" : "rt-debit")">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </div>
+                                <div>
+                                    <p class="rt-account">@(tx.Direction == "Debit" ? "To" : "From"): @tx.ToAccountId.ToString()[..12]</p>
+                                    <p class="rt-time">@tx.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                            <div class="rt-item-right">
+                                <span class="badge-status @GetStatusClass(tx.Status)">@tx.Status</span>
+                                <p class="rt-amount @(tx.Direction=="Credit"?"amount-credit":"")">
+                                    @(tx.Direction=="Credit" ? "+" : "-")NPR @tx.Amount.ToString("N2")
+                                </p>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Right: Quick Info -->
+        <div class="dash-right">
+            <div class="section-card">
+                <h3 class="section-title">Transfer Tips</h3>
+                <div class="tip-item"><span class="tip-num">1</span><p>Double-check the account number before confirming.</p></div>
+                <div class="tip-item"><span class="tip-num">2</span><p>Idempotency key prevents duplicate transfers on retry.</p></div>
+                <div class="tip-item"><span class="tip-num">3</span><p>Transfers use row-level locking — no double-debit possible.</p></div>
+                <div class="tip-item"><span class="tip-num">4</span><p>Balance updates live via SignalR after each transfer.</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AccountModel?            _account;
+    private TransactionHistoryModel? _history;
+    private TransferModel            _transfer       = new();
+    private string                   _errorMessage   = string.Empty;
+    private string                   _successMessage = string.Empty;
+    private bool                     _loading;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !Session.IsLoggedIn) { Nav.NavigateTo("/auth/login"); return; }
+        if (firstRender && Session.IsLoggedIn)
+        {
+            _account = await DashboardManager.GetMyAccountAsync();
+            _history = await DashboardManager.GetTransactionsAsync(1, 5);
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleTransfer()
+    {
+        _loading        = true;
+        _errorMessage   = string.Empty;
+        _successMessage = string.Empty;
+
+        var (ok, msg) = await DashboardManager.TransferAsync(_transfer, _account?.AccountId ?? Guid.Empty);
+
+        if (ok)
+        {
+            _successMessage = msg;
+            _transfer       = new TransferModel();
+            _account        = await DashboardManager.GetMyAccountAsync();
+            _history        = await DashboardManager.GetTransactionsAsync(1, 5);
+        }
+        else { _errorMessage = msg; }
+
+        _loading = false;
+    }
+
+    private static string GetStatusClass(string s) => s switch
+    {
+        "Completed" => "badge-completed",
+        "Pending"   => "badge-pending",
+        "Failed"    => "badge-failed",
+        _           => ""
+    };
+}

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {}
+    "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {}
   },
   "projects": {
-    "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {
+    "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
+        "projectUniqueName": "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "e:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
+        "projectPath": "E:\\DigitalBankingPlatform\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\ramar\\.nuget\\packages\\",
-        "outputPath": "e:\\DigitalBankingPlatform\\Domain\\obj\\",
+        "outputPath": "E:\\DigitalBankingPlatform\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -30,7 +30,6 @@
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -45,11 +44,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "Dapper": {
@@ -73,7 +71,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

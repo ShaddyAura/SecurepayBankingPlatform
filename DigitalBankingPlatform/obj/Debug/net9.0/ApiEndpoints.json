@@ -1,5 +1,31 @@
 [
   {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Account.AccountController",
+    "Method": "CreateAccount",
+    "RelativePath": "api/v1/account/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Account.CreateAccountDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Account.AccountController",
+    "Method": "GetMyAccount",
+    "RelativePath": "api/v1/account/my",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DigitalBankingPlatform.Controllers.Auth.AuthController",
     "Method": "ChangePassword",
     "RelativePath": "api/v1/auth/change-password",
@@ -214,6 +240,101 @@
       {
         "Name": "dto",
         "Type": "Application.DTOs.Auth.VerifyOtpDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Profile.ProfileController",
+    "Method": "GetProfile",
+    "RelativePath": "api/v1/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Profile.ProfileController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/v1/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Profile.UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Transaction.TransactionController",
+    "Method": "GetHistory",
+    "RelativePath": "api/v1/transactions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Transaction.TransactionController",
+    "Method": "GetById",
+    "RelativePath": "api/v1/transactions/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Transfer.TransferController",
+    "Method": "Transfer",
+    "RelativePath": "api/v1/transfer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Transfer.TransferRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DigitalBankingPlatform.Controllers.Transfer.TransferController",
+    "Method": "GetTransfer",
+    "RelativePath": "api/v1/transfer/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],

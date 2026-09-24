@@ -1,6 +1,18 @@
+using Application.Interfaces.IAccountService;
 using Application.Interfaces.IAuthservice;
+using Application.Interfaces.INotificationService;
+using Application.Interfaces.IProfileService;
+using Application.Interfaces.ITransactionService;
+using Application.Interfaces.ITransferService;
 using Application.Mappings.AuthMapping;
+using Application.Mappings.DashboardMapping;
+using Application.Services.AccountService;
 using Application.Services.AuthService;
+using Application.Services.ProfileService;
+using Application.Services.TransactionService;
+using Application.Services.TransferService;
+using DigitalBankingPlatform.Hubs;
+using DigitalBankingPlatform.Services;
 using Infrastructure.Dapper;
 using Infrastructure.Interfaces;
 using Infrastructure.Repository;
@@ -22,13 +34,26 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials());
+              .AllowCredentials()); // required for SignalR
 });
 
 builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddScoped<IGenericRepository, GenericRepository>();
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AuthMappingProfile>());
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<AuthMappingProfile>();
+    cfg.AddProfile<DashboardMappingProfile>();
+});
+
+builder.Services.AddScoped<IAuthService,        AuthService>();
+builder.Services.AddScoped<IAccountService,     AccountService>();
+builder.Services.AddScoped<ITransferService,    TransferService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IProfileService,     ProfileService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// SignalR
+builder.Services.AddSignalR();
 
 // JWT
 var jwtKey      = builder.Configuration["Jwt:Key"]!;
@@ -106,9 +131,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("BlazorPolicy"); // must be before Auth
+app.UseCors("BlazorPolicy"); 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<BankingHub>("/hubs/banking"); // SignalR endpoint
 
 app.Run();

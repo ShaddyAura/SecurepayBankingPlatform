@@ -1,8 +1,12 @@
 @page "/auth/login"
+@using DigiWeb.Manager.SessionManager
+@using DigiWeb.Manager.SignalRManager
 @layout MainLayout
 @rendermode InteractiveServer
-@inject IAuthManager AuthManager
+@inject IAuthManager    AuthManager
 @inject NavigationManager Nav
+@inject SessionManager  Session
+@inject ISignalRManager SignalRManager
 
 <PageTitle>Login — DigiTransfer</PageTitle>
 
@@ -249,7 +253,9 @@
 
         if (success && token != null)
         {
-            // TODO: store token in session/localStorage then navigate to dashboard
+            Session.SetUser(token); // store token + user in session
+            // Connect SignalR for real-time updates
+            await SignalRManager.ConnectAsync(token.AccessToken, token.CustomerId.ToString());
             Nav.NavigateTo("/dashboard");
         }
         else if (message == "2FA_REQUIRED")

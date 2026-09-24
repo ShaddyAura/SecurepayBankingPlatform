@@ -1,0 +1,269 @@
+@page "/dashboard/profile"
+@layout DashboardLayout
+@rendermode InteractiveServer
+@using DigiWeb.Models.Auth
+@inject IDashboardManager DashboardManager
+@inject IAuthManager      AuthManager
+@inject SessionManager    Session
+@inject NavigationManager Nav
+
+<PageTitle>Profile &amp; Security — DigiTransfer</PageTitle>
+
+<div class="dash-page">
+    <div class="dash-welcome-row">
+        <div>
+            <h1 class="dash-welcome-title">Profile &amp; Security</h1>
+            <p class="dash-welcome-sub">Manage your personal info and security settings.</p>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+        <div class="dash-left">
+
+            <!-- Profile Info -->
+            <div class="section-card">
+                <h3 class="section-title">Personal Information</h3>
+                @if (!string.IsNullOrEmpty(_profileMsg))
+                {
+                    <div class="alert @(_profileOk ? "alert-success" : "alert-error")">@_profileMsg</div>
+                }
+                @if (_profile is null)
+                {
+                    <div class="skeleton-line wide"></div>
+                }
+                else
+                {
+                    <EditForm Model="_updateModel" OnValidSubmit="HandleUpdateProfile" FormName="ProfileForm">
+                        <DataAnnotationsValidator />
+                        <div class="tf-row">
+                            <div class="tf-field">
+                                <label class="tf-label">Full Name</label>
+                                <div class="tf-input-wrap">
+                                    <InputText class="tf-input" @bind-Value="_updateModel.Name" placeholder="Your full name" />
+                                </div>
+                                <ValidationMessage For="@(() => _updateModel.Name)" class="validation-message" />
+                            </div>
+                            <div class="tf-field">
+                                <label class="tf-label">Phone Number</label>
+                                <div class="tf-input-wrap">
+                                    <InputText class="tf-input" @bind-Value="_updateModel.PhoneNumber" placeholder="+977 9800000000" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tf-field" style="margin-top:0.75rem;">
+                            <label class="tf-label">Email (read-only)</label>
+                            <div class="tf-input-wrap">
+                                <input class="tf-input" value="@_profile.Email" disabled style="opacity:0.5;" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-transfer" style="margin-top:1rem;" disabled="@_profileLoading">
+                            @if (_profileLoading) { <span class="spinner"></span> }
+                            Save Changes
+                        </button>
+                    </EditForm>
+                }
+            </div>
+
+            <!-- Change Password -->
+            <div class="section-card">
+                <h3 class="section-title">Change Password</h3>
+                @if (!string.IsNullOrEmpty(_pwdMsg))
+                {
+                    <div class="alert @(_pwdOk ? "alert-success" : "alert-error")">@_pwdMsg</div>
+                }
+                <EditForm Model="_changePwd" OnValidSubmit="HandleChangePassword" FormName="ChangePwdForm">
+                    <DataAnnotationsValidator />
+                    <div class="tf-field" style="margin-bottom:0.75rem;">
+                        <label class="tf-label">Current Password</label>
+                        <div class="tf-input-wrap">
+                            <InputText class="tf-input" @bind-Value="_changePwd.CurrentPassword" type="password" placeholder="Current password" />
+                        </div>
+                        <ValidationMessage For="@(() => _changePwd.CurrentPassword)" class="validation-message" />
+                    </div>
+                    <div class="tf-row">
+                        <div class="tf-field">
+                            <label class="tf-label">New Password</label>
+                            <div class="tf-input-wrap">
+                                <InputText class="tf-input" @bind-Value="_changePwd.NewPassword" type="password" placeholder="New password" />
+                            </div>
+                            <ValidationMessage For="@(() => _changePwd.NewPassword)" class="validation-message" />
+                        </div>
+                        <div class="tf-field">
+                            <label class="tf-label">Confirm Password</label>
+                            <div class="tf-input-wrap">
+                                <InputText class="tf-input" @bind-Value="_changePwd.ConfirmPassword" type="password" placeholder="Confirm password" />
+                            </div>
+                            <ValidationMessage For="@(() => _changePwd.ConfirmPassword)" class="validation-message" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-transfer" style="margin-top:1rem;" disabled="@_pwdLoading">
+                        @if (_pwdLoading) { <span class="spinner"></span> }
+                        Update Password
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="dash-right">
+
+            <!-- Security Settings -->
+            <div class="section-card">
+                <h3 class="section-title">Security Settings</h3>
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                        <div>
+                            <p class="as-item-title">Email Verified</p>
+                            <p class="as-item-sub">@(_profile?.Email ?? "—")</p>
+                        </div>
+                    </div>
+                    @if (_profile?.IsEmailVerified == true)
+                    {
+                        <div class="as-check check-green">✓</div>
+                    }
+                    else
+                    {
+                        <a href="/auth/verify-email" class="tx-view-btn">Verify</a>
+                    }
+                </div>
+
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.48 2 2 0 0 1 3.59 1.31h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                        <div>
+                            <p class="as-item-title">Phone Verified</p>
+                            <p class="as-item-sub">@(_profile?.PhoneNumber ?? "Not set")</p>
+                        </div>
+                    </div>
+                    <div class="as-check @(_profile?.IsPhoneVerified == true ? "check-green" : "check-red")">
+                        @(_profile?.IsPhoneVerified == true ? "✓" : "✗")
+                    </div>
+                </div>
+
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                        <div>
+                            <p class="as-item-title">Two-Factor Auth</p>
+                            <p class="as-item-sub">@(_profile?.Is2FAEnabled == true ? "Enabled" : "Disabled")</p>
+                        </div>
+                    </div>
+                    <button type="button" class="toggle-switch @(_profile?.Is2FAEnabled == true ? "toggle-on" : "toggle-off")"
+                            @onclick="Toggle2FA"></button>
+                </div>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="section-card">
+                <h3 class="section-title">Active Sessions</h3>
+                @if (_sessions is null)
+                {
+                    <div class="skeleton-line"></div>
+                }
+                else if (!_sessions.Any())
+                {
+                    <p style="font-size:0.8rem;color:var(--text-muted);">No active sessions.</p>
+                }
+                else
+                {
+                    @foreach (var s in _sessions)
+                    {
+                        <div class="as-item">
+                            <div class="as-item-left">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                                <div>
+                                    <p class="as-item-title">@(string.IsNullOrEmpty(s.DeviceInfo) ? "Unknown Device" : s.DeviceInfo)</p>
+                                    <p class="as-item-sub">@s.IpAddress — Expires @s.ExpiresAt.ToString("MMM dd HH:mm")</p>
+                                </div>
+                            </div>
+                            <button type="button" class="tx-view-btn" @onclick="() => RevokeSession(s.Token)"
+                                    style="color:#EF4444;">Revoke</button>
+                        </div>
+                    }
+                }
+                <button type="button" class="btn-transfer" style="margin-top:1rem;background:#EF4444;" @onclick="LogoutAll">
+                    Logout All Devices
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ProfileModel?              _profile;
+    private IEnumerable<SessionModel>? _sessions;
+    private UpdateProfileModel         _updateModel = new();
+    private ChangePasswordModel        _changePwd   = new();
+    private string _profileMsg    = string.Empty;
+    private bool   _profileOk;
+    private bool   _profileLoading;
+    private string _pwdMsg        = string.Empty;
+    private bool   _pwdOk;
+    private bool   _pwdLoading;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/auth/login"); return; }
+
+        _profile  = await DashboardManager.GetProfileAsync();
+        _sessions = await DashboardManager.GetActiveSessionsAsync();
+
+        if (_profile is not null)
+        {
+            _updateModel.Name        = _profile.Name;
+            _updateModel.PhoneNumber = _profile.PhoneNumber;
+        }
+        StateHasChanged();
+    }
+
+    private async Task HandleUpdateProfile()
+    {
+        _profileLoading = true;
+        var (ok, msg)   = await DashboardManager.UpdateProfileAsync(_updateModel);
+        _profileOk      = ok;
+        _profileMsg     = msg;
+        if (ok) _profile = await DashboardManager.GetProfileAsync();
+        _profileLoading = false;
+    }
+
+    private async Task HandleChangePassword()
+    {
+        _pwdLoading   = true;
+        var token     = Session.CurrentUser?.AccessToken ?? string.Empty;
+        var (ok, msg) = await AuthManager.ChangePasswordAsync(_changePwd, token);
+        _pwdOk        = ok;
+        _pwdMsg       = msg;
+        if (ok) _changePwd = new ChangePasswordModel();
+        _pwdLoading   = false;
+    }
+
+    private async Task Toggle2FA()
+    {
+        if (_profile is null) return;
+        var token = Session.CurrentUser?.AccessToken ?? string.Empty;
+        if (_profile.Is2FAEnabled)
+            await AuthManager.Disable2FAAsync(token);
+        else
+            await AuthManager.Enable2FAAsync(token);
+        _profile = await DashboardManager.GetProfileAsync();
+        StateHasChanged();
+    }
+
+    private async Task RevokeSession(string refreshToken)
+    {
+        var token = Session.CurrentUser?.AccessToken ?? string.Empty;
+        await AuthManager.RevokeSessionAsync(refreshToken, token);
+        _sessions = await DashboardManager.GetActiveSessionsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LogoutAll()
+    {
+        var token = Session.CurrentUser?.AccessToken ?? string.Empty;
+        await AuthManager.LogoutAllAsync(token);
+        Session.Clear();
+        Nav.NavigateTo("/auth/login");
+    }
+}

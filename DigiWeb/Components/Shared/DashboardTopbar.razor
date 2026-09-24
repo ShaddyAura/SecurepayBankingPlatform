@@ -1,0 +1,136 @@
+@inject NavigationManager Nav
+@inject SessionManager    Session
+@inject ISignalRManager   SignalRManager
+@implements IAsyncDisposable
+
+<header class="topbar">
+    <div class="topbar-search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search transactions, account number..." />
+    </div>
+
+    <div class="topbar-right">
+        <div class="topbar-status">
+            <span class="status-dot green"></span>
+            <span>Online</span>
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="notif-bell-wrap">
+            <button class="topbar-notif" @onclick="ToggleBell">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                @if (_unread > 0)
+                {
+                    <span class="notif-badge">@(_unread > 9 ? "9+" : _unread.ToString())</span>
+                }
+            </button>
+
+            @if (_bellOpen)
+            {
+                <div class="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <span>Notifications</span>
+                        @if (_notifications.Any(n => !n.Read))
+                        {
+                            <button class="notif-mark-all" @onclick="MarkAllRead">Mark all read</button>
+                        }
+                    </div>
+                    @if (!_notifications.Any())
+                    {
+                        <div class="notif-dropdown-empty">No notifications yet.</div>
+                    }
+                    @foreach (var n in _notifications.Take(6))
+                    {
+                        <div class="notif-dropdown-item @(n.Read ? "" : "notif-unread")"
+                             @onclick="() => MarkRead(n)">
+                            <div class="notif-dot @(n.Type == "balance" ? "green-bg" : "blue-bg")">
+                                @if (n.Type == "balance")
+                                {
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#00C07F" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                                }
+                                else
+                                {
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#4FC3F7" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                }
+                            </div>
+                            <div style="flex:1;">
+                                <p class="notif-dropdown-title">@n.Title</p>
+                                <p class="notif-dropdown-sub">@n.Message</p>
+                                <p class="notif-dropdown-time">@n.At.ToString("HH:mm:ss")</p>
+                            </div>
+                            @if (!n.Read)
+                            {
+                                <div class="notif-unread-dot"></div>
+                            }
+                        </div>
+                    }
+                    <a href="/dashboard/notifications" class="notif-dropdown-footer"
+                       @onclick="() => _bellOpen = false">
+                        View all notifications
+                    </a>
+                </div>
+            }
+        </div>
+
+        <!-- User -->
+        <div class="topbar-user">
+            <div class="user-avatar">@GetInitials()</div>
+            <span class="user-name">@(Session.CurrentUser?.Name ?? "User")</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+    </div>
+</header>
+
+@code {
+    private bool _bellOpen;
+    private int  _unread => _notifications.Count(n => !n.Read);
+    private readonly List<NotifItem> _notifications = new();
+
+    protected override void OnInitialized()
+    {
+        SignalRManager.BalanceUpdated        += OnBalance;
+        SignalRManager.TransferStatusChanged += OnTransfer;
+    }
+
+    private void OnBalance(decimal b)
+    {
+        _notifications.Insert(0, new NotifItem("balance", "Balance Updated", $"NPR {b:N2}"));
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnTransfer(TransferStatusEvent e)
+    {
+        _notifications.Insert(0, new NotifItem("transfer", $"Transfer {e.Status}", $"NPR {e.Amount:N2}"));
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleBell()  => _bellOpen = !_bellOpen;
+    private void MarkRead(NotifItem n) { n.Read = true; StateHasChanged(); }
+    private void MarkAllRead() { foreach (var n in _notifications) n.Read = true; StateHasChanged(); }
+
+    private string GetInitials()
+    {
+        var name  = Session.CurrentUser?.Name ?? "U";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[1][0]}"
+            : name[..Math.Min(2, name.Length)].ToUpper();
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        SignalRManager.BalanceUpdated        -= OnBalance;
+        SignalRManager.TransferStatusChanged -= OnTransfer;
+        return ValueTask.CompletedTask;
+    }
+
+    private class NotifItem
+    {
+        public string Type    { get; }
+        public string Title   { get; }
+        public string Message { get; }
+        public DateTime At    { get; } = DateTime.Now;
+        public bool Read      { get; set; }
+        public NotifItem(string type, string title, string msg) { Type=type; Title=title; Message=msg; }
+    }
+}

@@ -1,0 +1,535 @@
+@page "/dashboard"
+@using DigiWeb.Manager.SessionManager
+@using DigiWeb.Manager.SignalRManager
+@layout DashboardLayout
+@rendermode InteractiveServer
+@inject IDashboardManager DashboardManager
+@inject ISignalRManager   SignalRManager
+@inject SessionManager    Session
+@inject NavigationManager Nav
+@implements IAsyncDisposable
+
+<PageTitle>Dashboard — DigiTransfer</PageTitle>
+
+<div class="dash-page">
+
+    <!-- Welcome Row -->
+    <div class="dash-welcome-row">
+        <div>
+            <h1 class="dash-welcome-title">Welcome back, @(Session.CurrentUser?.Name ?? "Customer") 👋</h1>
+            <p class="dash-welcome-sub">Here's your account overview and recent activity.</p>
+        </div>
+        <div class="dash-live-badge">
+            <span class="status-dot green"></span>
+            Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") &nbsp; Live
+        </div>
+    </div>
+
+    <div class="dash-grid">
+        <!-- LEFT COLUMN -->
+        <div class="dash-left">
+
+            <!-- Account Overview Card -->
+            <div class="account-card">
+                <div class="account-card-header">
+                    <span class="account-card-label">Account Overview</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                </div>
+                <div class="account-card-body">
+                    <div>
+                        <p class="ac-bal-label">Available Balance
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" style="margin-left:6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </p>
+                        @if (_account is null)
+                        {
+                            <div class="skeleton-line wide"></div>
+                        }
+                        else
+                        {
+                            <h2 class="ac-balance">NPR @_account.Balance.ToString("N2")</h2>
+                            <div class="ac-live-tag"><span class="status-dot green"></span> Live balance (via SignalR)</div>
+                        }
+                    </div>
+                    <div class="ac-meta">
+                        <p class="ac-meta-label">Account Number</p>
+                        <p class="ac-meta-value">@(_account?.AccountNumber ?? "—")</p>
+                        <p class="ac-meta-label" style="margin-top:0.75rem;">Account Status</p>
+                        <span class="badge-active">@(_account?.Status ?? "—")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon green-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00C07F" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </div>
+                    <div>
+                        <p class="stat-label">Total Sent</p>
+                        <p class="stat-value">NPR 245,670.00</p>
+                        <p class="stat-change up">↑ 12%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#4FC3F7" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+                    </div>
+                    <div>
+                        <p class="stat-label">Total Received</p>
+                        <p class="stat-value">NPR 320,450.00</p>
+                        <p class="stat-change up">↑ 18%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple-bg">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#A78BFA" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div>
+                        <p class="stat-label">This Month</p>
+                        <p class="stat-value">NPR 95,320.00</p>
+                        <p class="stat-change up">↑ 9%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fund Transfer Section -->
+            <div class="section-card">
+                <h3 class="section-title">Fund Transfer</h3>
+                <div class="transfer-section-grid">
+                    <!-- Transfer Form -->
+                    <div class="transfer-form-box">
+                        <div class="tf-header">
+                            <div class="tf-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4FC3F7" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            </div>
+                            <div>
+                                <p class="tf-title">Transfer to Another Account</p>
+                                <p class="tf-sub">Enter account details and amount to transfer funds securely.</p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_transferError))
+                        {
+                            <div class="alert alert-error" style="margin-bottom:0.75rem;">@_transferError</div>
+                        }
+                        @if (!string.IsNullOrEmpty(_transferSuccess))
+                        {
+                            <div class="alert alert-success" style="margin-bottom:0.75rem;">@_transferSuccess</div>
+                        }
+
+                        <EditForm Model="_transfer" OnValidSubmit="HandleTransfer" FormName="TransferForm">
+                            <DataAnnotationsValidator />
+                            <div class="tf-row">
+                                <div class="tf-field">
+                                    <label class="tf-label">Account Number</label>
+                                    <div class="tf-input-wrap">
+                                        <svg class="input-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9ab" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                        <InputText class="tf-input" @bind-Value="_transfer.ToAccountNumber" placeholder="Enter recipient account number"/>
+                                    </div>
+                                    <ValidationMessage For="@(()=>_transfer.ToAccountNumber)" class="validation-message"/>
+                                </div>
+                                <div class="tf-field">
+                                    <label class="tf-label">Amount (NPR)</label>
+                                    <div class="tf-input-wrap">
+                                        <InputNumber class="tf-input" @bind-Value="_transfer.Amount" placeholder="Enter amount"/>
+                                    </div>
+                                    <ValidationMessage For="@(()=>_transfer.Amount)" class="validation-message"/>
+                                </div>
+                            </div>
+                            <div class="tf-field" style="margin-top:0.75rem;">
+                                <label class="tf-label">Idempotency Key (Optional)
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#7a9fc4" stroke-width="2" style="margin-left:4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                </label>
+                                <div class="tf-input-wrap">
+                                    <InputText class="tf-input" @bind-Value="_transfer.IdempotencyKey" placeholder="Auto-generated or enter your own key"/>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-transfer" disabled="@_transferLoading">
+                                @if (_transferLoading) { <span class="spinner"></span> }
+                                Continue →
+                            </button>
+                        </EditForm>
+                    </div>
+
+                    <!-- Recent Transfers -->
+                    <div class="recent-transfers-box">
+                        <div class="rt-header">
+                            <p class="rt-title">Recent Transfers</p>
+                            <a href="/dashboard/transactions" class="rt-viewall">View all</a>
+                        </div>
+                        @if (_history is null)
+                        {
+                            @for (int i = 0; i < 4; i++)
+                            {
+                                <div class="rt-skeleton"></div>
+                            }
+                        }
+                        else
+                        {
+                            @foreach (var tx in _history.Transactions.Take(4))
+                            {
+                                <div class="rt-item">
+                                    <div class="rt-item-left">
+                                        <div class="rt-dot @(tx.Direction == "Credit" ? "rt-credit" : "rt-debit")">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                        </div>
+                                        <div>
+                                            <p class="rt-account">To: @tx.ToAccountId.ToString()[..12]</p>
+                                            <p class="rt-time">@tx.CreatedAt.ToString("MMM dd, HH:mm tt")</p>
+                                        </div>
+                                    </div>
+                                    <div class="rt-item-right">
+                                        <span class="badge-status @GetStatusClass(tx.Status)">@tx.Status</span>
+                                        <p class="rt-amount @(tx.Direction == "Credit" ? "amount-credit" : "amount-debit")">
+                                            @(tx.Direction == "Credit" ? "+" : "-")NPR @tx.Amount.ToString("N2")
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History Table -->
+            <div class="section-card">
+                <div class="th-header">
+                    <h3 class="section-title" style="margin:0;">Transaction History</h3>
+                    <div class="th-filters">
+                        <div class="th-filter-chip">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7a9fc4" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Apr 1, 2025 – Jun 14, 2025
+                        </div>
+                        <select class="th-select"><option>All Statuses</option><option>Completed</option><option>Pending</option><option>Failed</option></select>
+                        <select class="th-select"><option>All Directions</option><option>Debit</option><option>Credit</option></select>
+                        <button class="btn-apply">Apply</button>
+                    </div>
+                </div>
+
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Type</th>
+                            <th>Direction</th>
+                            <th>Account Number</th>
+                            <th>Amount (NPR)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (_history is null)
+                        {
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                <tr><td colspan="7"><div class="skeleton-line"></div></td></tr>
+                            }
+                        }
+                        else if (!_history.Transactions.Any())
+                        {
+                            <tr><td colspan="7" class="tx-empty">No transactions found.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var tx in _history.Transactions)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="tx-date-avatar @GetAvatarClass(tx.Status)">@tx.Status[0]</div>
+                                        @tx.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                    </td>
+                                    <td>Transfer</td>
+                                    <td><span class="tx-direction @(tx.Direction == "Credit" ? "dir-credit" : "dir-debit")">@tx.Direction</span></td>
+                                    <td class="tx-mono">@tx.ToAccountId.ToString()[..12]</td>
+                                    <td class="@(tx.Direction == "Credit" ? "amount-credit" : "amount-debit")">
+                                        @(tx.Direction == "Credit" ? "+" : "-")@tx.Amount.ToString("N0")
+                                    </td>
+                                    <td><span class="badge-status @GetStatusClass(tx.Status)">@tx.Status</span></td>
+                                    <td><a href="/dashboard/transactions/@tx.TransactionId" class="tx-view-btn">View</a></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                @if (_history is not null && _history.TotalPages > 1)
+                {
+                    <div class="pagination">
+                        <button class="pg-btn" @onclick="PrevPage" disabled="@(_page == 1)">‹</button>
+                        @for (int i = 1; i <= Math.Min(_history.TotalPages, 9); i++)
+                        {
+                            var pg = i;
+                            <button class="pg-btn @(_page == pg ? "pg-active" : "")" @onclick="()=>GoToPage(pg)">@pg</button>
+                        }
+                        <button class="pg-btn" @onclick="NextPage" disabled="@(_page >= _history.TotalPages)">›</button>
+                    </div>
+                }
+                <p class="tx-showing">
+                    Showing @((_page-1)*_pageSize+1)–@Math.Min(_page*_pageSize, _history?.TotalCount ?? 0) of @(_history?.TotalCount ?? 0) transactions
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="dash-right">
+
+            <!-- Quick Actions -->
+            <div class="section-card">
+                <h3 class="section-title">Quick Actions</h3>
+                <a href="/dashboard/transfer" class="qa-item">
+                    <div class="qa-icon blue-bg">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4FC3F7" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </div>
+                    <div class="qa-text">
+                        <p class="qa-title">Transfer to Another Account</p>
+                        <p class="qa-sub">Fast, secure and reliable</p>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+                <a href="/dashboard/transactions" class="qa-item">
+                    <div class="qa-icon orange-bg">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="qa-text">
+                        <p class="qa-title">View Transfer Status</p>
+                        <p class="qa-sub">Check your transfer progress</p>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+                <a href="/dashboard/transactions" class="qa-item">
+                    <div class="qa-icon green-bg">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#00C07F" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </div>
+                    <div class="qa-text">
+                        <p class="qa-title">Recent Transfers</p>
+                        <p class="qa-sub">See your latest transfers</p>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            </div>
+
+            <!-- Notifications -->
+            <div class="section-card">
+                <div class="notif-header">
+                    <h3 class="section-title" style="margin:0;">Notifications</h3>
+                    <a href="/dashboard/notifications" class="rt-viewall">View all</a>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-dot green-bg"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#00C07F" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                    <div>
+                        <p class="notif-title">Balance Updated</p>
+                        <p class="notif-sub">Your balance has been updated to NPR 125,430.00</p>
+                        <p class="notif-time">2 minutes ago</p>
+                    </div>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-dot blue-bg"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#4FC3F7" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+                    <div>
+                        <p class="notif-title">Transfer Completed</p>
+                        <p class="notif-sub">Your transfer of NPR 5,000.00 to 001234567891 has been completed.</p>
+                        <p class="notif-time">10 minutes ago</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Status -->
+            <div class="section-card">
+                <h3 class="section-title">Account Status</h3>
+                <div class="as-status-row">
+                    <div class="as-icon green-bg"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00C07F" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+                    <div class="as-text">
+                        <p class="as-title">Active</p>
+                        <p class="as-sub">Your account is in good standing.</p>
+                    </div>
+                </div>
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <div>
+                            <p class="as-item-title">Email Verified</p>
+                            <p class="as-item-sub">@(_profile?.Email ?? "—")</p>
+                        </div>
+                    </div>
+                    <div class="as-check @(_profile?.IsEmailVerified == true ? "check-green" : "check-red")">
+                        @(_profile?.IsEmailVerified == true ? "✓" : "✗")
+                    </div>
+                </div>
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.48 2 2 0 0 1 3.59 1.31h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <div>
+                            <p class="as-item-title">Phone Verified</p>
+                            <p class="as-item-sub">@(_profile?.PhoneNumber ?? "—")</p>
+                        </div>
+                    </div>
+                    <div class="as-check @(_profile?.IsPhoneVerified == true ? "check-green" : "check-red")">
+                        @(_profile?.IsPhoneVerified == true ? "✓" : "✗")
+                    </div>
+                </div>
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <div>
+                            <p class="as-item-title">2FA Enabled</p>
+                            <p class="as-item-sub">Authenticator App</p>
+                        </div>
+                    </div>
+                    <div class="toggle-switch @(_profile?.Is2FAEnabled == true ? "toggle-on" : "toggle-off")"></div>
+                </div>
+                <div class="as-item">
+                    <div class="as-item-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7a9fc4" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        <div>
+                            <p class="as-item-title">Active Sessions</p>
+                            <p class="as-item-sub">2 devices are currently logged in</p>
+                        </div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    @if (_showToast)
+    {
+        <div class="toast-notification">
+            <div class="toast-icon green-bg">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00C07F" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            </div>
+            <div>
+                <p class="toast-title">Balance Updated</p>
+                <p class="toast-sub">@_toastMessage</p>
+            </div>
+            <button class="toast-close" @onclick="()=>_showToast=false">✕</button>
+        </div>
+    }
+</div>
+
+@code {
+    private AccountModel?            _account;
+    private TransactionHistoryModel? _history;
+    private ProfileModel?            _profile;
+    private TransferModel            _transfer        = new();
+    private string                   _transferError   = string.Empty;
+    private string                   _transferSuccess = string.Empty;
+    private bool                     _transferLoading;
+    private bool                     _showToast       = true;
+    private string                   _toastMessage    = string.Empty;
+    private int                      _page            = 1;
+    private const int                _pageSize        = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsLoggedIn) return; // guard — redirect handled in OnAfterRenderAsync
+
+        _account = await DashboardManager.GetMyAccountAsync();
+        _profile = await DashboardManager.GetProfileAsync();
+
+        if (_account is not null)
+            _history = await DashboardManager.GetTransactionsAsync(_page, _pageSize);
+
+        SignalRManager.BalanceUpdated        += OnBalanceUpdated;
+        SignalRManager.TransferStatusChanged += OnTransferStatusChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !Session.IsLoggedIn)
+        {
+            Nav.NavigateTo("/auth/login"); // safe to call here — after render
+            return;
+        }
+
+        if (firstRender && Session.IsLoggedIn && _account is null)
+        {
+            // Fallback load if OnInitializedAsync was skipped due to prerender timing
+            _account = await DashboardManager.GetMyAccountAsync();
+            _profile = await DashboardManager.GetProfileAsync();
+            if (_account is not null)
+                _history = await DashboardManager.GetTransactionsAsync(_page, _pageSize);
+            StateHasChanged();
+        }
+    }
+
+    // Called by server when balance changes after a transfer
+    private void OnBalanceUpdated(decimal newBalance)
+    {
+        if (_account is not null)
+        {
+            _account.Balance = newBalance;
+            _toastMessage    = $"Balance updated to NPR {newBalance:N2}";
+            _showToast       = true;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Called by server when transfer status changes (Pending → Completed/Failed)
+    private void OnTransferStatusChanged(TransferStatusEvent evt)
+    {
+        _toastMessage = $"Transfer {evt.Status} — NPR {evt.Amount:N2}";
+        _showToast    = true;
+        // Refresh history to show updated status row
+        _ = InvokeAsync(async () =>
+        {
+            _history = await DashboardManager.GetTransactionsAsync(_page, _pageSize);
+            StateHasChanged();
+        });
+    }
+
+    private async Task HandleTransfer()
+    {
+        _transferLoading = true;
+        _transferError   = string.Empty;
+        _transferSuccess = string.Empty;
+
+        var fromId = _account?.AccountId ?? Guid.Empty;
+        var (ok, msg) = await DashboardManager.TransferAsync(_transfer, fromId);
+
+        if (ok)
+        {
+            _transferSuccess = msg;
+            _transfer        = new TransferModel();
+            _account         = await DashboardManager.GetMyAccountAsync();
+            _history         = await DashboardManager.GetTransactionsAsync(_page, _pageSize);
+        }
+        else { _transferError = msg; }
+
+        _transferLoading = false;
+    }
+
+    private async Task GoToPage(int pg)
+    {
+        _page    = pg;
+        _history = await DashboardManager.GetTransactionsAsync(_page, _pageSize);
+    }
+
+    private async Task PrevPage() { if (_page > 1) await GoToPage(_page - 1); }
+    private async Task NextPage() { if (_history is not null && _page < _history.TotalPages) await GoToPage(_page + 1); }
+
+    private static string GetStatusClass(string status) => status switch
+    {
+        "Completed" => "badge-completed",
+        "Pending"   => "badge-pending",
+        "Failed"    => "badge-failed",
+        _           => ""
+    };
+
+    private static string GetAvatarClass(string status) => status switch
+    {
+        "Completed" => "avatar-green",
+        "Pending"   => "avatar-orange",
+        "Failed"    => "avatar-red",
+        _           => "avatar-blue"
+    };
+
+    public async ValueTask DisposeAsync()
+    {
+        SignalRManager.BalanceUpdated        -= OnBalanceUpdated;
+        SignalRManager.TransferStatusChanged -= OnTransferStatusChanged;
+        await SignalRManager.DisposeAsync();
+    }
+}

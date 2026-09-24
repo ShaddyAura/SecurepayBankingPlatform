@@ -1,0 +1,89 @@
+@inject NavigationManager Nav
+@inject SessionManager    Session
+
+<aside class="sidebar @(_collapsed ? "sidebar-collapsed" : "")">
+
+    <!-- Logo + collapse toggle -->
+    <div class="sidebar-logo">
+        @if (!_collapsed)
+        {
+            <div class="sb-brand-wrap" @onclick='()=>Nav.NavigateTo("/")'>
+                <svg viewBox="0 0 40 40" width="30" height="30">
+                    <defs>
+                        <linearGradient id="sbG" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4FC3F7"/>
+                            <stop offset="100%" style="stop-color:#00E5A0"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="20" cy="20" r="18" fill="none" stroke="url(#sbG)" stroke-width="2.5"/>
+                    <path d="M10 20 H26 M20 14 L28 20 L20 26" stroke="url(#sbG)" stroke-width="2.5"
+                          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="sb-brand">
+                    <span class="logo-digi">Digi</span><span class="logo-transfer">Transfer</span>
+                </span>
+            </div>
+        }
+        <button class="sb-collapse-btn" @onclick="ToggleSidebar" title="Toggle sidebar">
+            @if (_collapsed)
+            {
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            }
+            else
+            {
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            }
+        </button>
+    </div>
+
+    <!-- Nav links -->
+    <nav class="sidebar-nav">
+        <NavLink href="/dashboard"              Match="NavLinkMatch.All" class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            @if (!_collapsed) { <span>Dashboard</span> }
+        </NavLink>
+        <NavLink href="/dashboard/create-account" class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+            @if (!_collapsed) { <span>My Account</span> }
+        </NavLink>
+        <NavLink href="/dashboard/transfer"     class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            @if (!_collapsed) { <span>Fund Transfer</span> }
+        </NavLink>
+        <NavLink href="/dashboard/transactions" class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            @if (!_collapsed) { <span>Transaction History</span> }
+        </NavLink>
+        <NavLink href="/dashboard/profile"      class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            @if (!_collapsed) { <span>Profile &amp; Security</span> }
+        </NavLink>
+        <NavLink href="/dashboard/notifications" class="sb-link" ActiveClass="sb-active">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            @if (!_collapsed) { <span>Notifications</span> }
+        </NavLink>
+    </nav>
+
+    <!-- Help -->
+    @if (!_collapsed)
+    {
+        <div class="sidebar-help">
+            <div class="help-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#4FC3F7" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="3"/></svg>
+            </div>
+            <div>
+                <p class="help-title">Need Help?</p>
+                <p class="help-sub">We're here for you</p>
+            </div>
+        </div>
+    }
+</aside>
+
+@code {
+    private bool _collapsed;
+    private void ToggleSidebar() => _collapsed = !_collapsed;
+}

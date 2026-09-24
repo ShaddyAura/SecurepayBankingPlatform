@@ -1,4 +1,5 @@
 using DigiWeb.Models.Auth;
+using DigiWeb.Models.Dashboard;
 
 namespace DigiWeb.Manager.AuthManager;
 
@@ -11,4 +12,9 @@ public interface IAuthManager
     Task<(bool Success, string Message)> VerifyEmailOtpAsync(VerifyOtpModel model);
     Task<(bool Success, string Message)> Verify2FAOtpAsync(VerifyOtpModel model);
     Task LogoutAsync();
+    Task<(bool, string)> ChangePasswordAsync(ChangePasswordModel model, string accessToken);
+    Task Enable2FAAsync(string accessToken);
+    Task Disable2FAAsync(string accessToken);
+    Task RevokeSessionAsync(string refreshToken, string accessToken);
+    Task LogoutAllAsync(string accessToken);
 }

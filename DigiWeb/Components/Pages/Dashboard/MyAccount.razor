@@ -1,0 +1,442 @@
+@page "/dashboard/create-account"
+@layout DashboardLayout
+@rendermode InteractiveServer
+@inject IDashboardManager DashboardManager
+@inject ISignalRManager   SignalRManager
+@inject SessionManager    Session
+@inject NavigationManager Nav
+@implements IAsyncDisposable
+
+<PageTitle>My Account — DigiTransfer</PageTitle>
+
+<div class="dash-page">
+
+    @if (_loading)
+    {
+        <div class="acc-loading">
+            <div class="skeleton-line wide" style="height:200px;border-radius:16px;margin-bottom:1rem;"></div>
+            <div class="stats-row">
+                <div class="skeleton-line" style="height:100px;border-radius:14px;"></div>
+                <div class="skeleton-line" style="height:100px;border-radius:14px;"></div>
+                <div class="skeleton-line" style="height:100px;border-radius:14px;"></div>
+            </div>
+        </div>
+    }
+    else if (_account is null && !_showCreate)
+    {
+        <!-- No account — prompt to create -->
+        <div class="acc-empty-state">
+            <div class="acc-empty-icon">🏦</div>
+            <h2 class="acc-empty-title">No Account Yet</h2>
+            <p class="acc-empty-sub">You don't have a bank account yet. Open one now to start transferring funds.</p>
+            <button class="btn-transfer" style="margin-top:1.5rem;padding:0.85rem 2.5rem;"
+                    @onclick="() => _showCreate = true">
+                Open New Account →
+            </button>
+        </div>
+    }
+    else if (_showCreate)
+    {
+        <!-- Create Account Form -->
+        <div class="dash-welcome-row">
+            <div>
+                <h1 class="dash-welcome-title">Open New Account</h1>
+                <p class="dash-welcome-sub">Choose your account type and initial deposit.</p>
+            </div>
+            @if (_account is not null)
+            {
+                <button class="btn-apply" @onclick="() => _showCreate = false">← Back to Account</button>
+            }
+        </div>
+
+        <div class="dash-grid">
+            <div class="dash-left">
+                <div class="section-card">
+                    <h3 class="section-title">Select Account Type</h3>
+                    <div class="acc-type-grid">
+                        @foreach (var t in _types)
+                        {
+                            <div class="acc-type-card @(_createModel.AccountType == t.Key ? "acc-type-active" : "")"
+                                 @onclick="() => _createModel.AccountType = t.Key">
+                                <div class="acc-type-icon">@t.Icon</div>
+                                <p class="acc-type-name">@t.Key</p>
+                                <p class="acc-type-desc">@t.Desc</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="section-title">Account Details</h3>
+                    @if (!string.IsNullOrEmpty(_createError))   { <div class="alert alert-error">@_createError</div> }
+                    @if (!string.IsNullOrEmpty(_createSuccess)) { <div class="alert alert-success">@_createSuccess</div> }
+
+                    <div class="tf-field" style="margin-bottom:1rem;">
+                        <label class="tf-label">Account Type</label>
+                        <div class="tf-input-wrap">
+                            <select class="tf-input" @bind="_createModel.AccountType">
+                                <option value="Saving">Saving Account</option>
+                                <option value="Salary">Salary Account</option>
+                                <option value="Current">Current Account</option>
+                                <option value="Fixed">Fixed Deposit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tf-field" style="margin-bottom:1rem;">
+                        <label class="tf-label">Initial Deposit (NPR)</label>
+                        <div class="tf-input-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9ab" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            <input type="number" class="tf-input" @bind="_createModel.InitialDeposit" placeholder="0.00" min="0" step="0.01" />
+                        </div>
+                    </div>
+
+                    <div class="acc-preview-box" style="margin-bottom:1rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#4FC3F7" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <div>
+                            <p class="tf-label">Account Number Preview</p>
+                            <p style="font-size:0.9rem;font-weight:600;color:var(--text-primary);">
+                                @GetPreview()
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="btn-transfer" @onclick="HandleCreate" disabled="@_createLoading">
+                        @if (_createLoading) { <span class="spinner"></span> }
+                        Create Account →
+                    </button>
+                </div>
+            </div>
+
+            <div class="dash-right">
+                <div class="section-card">
+                    <h3 class="section-title">About @_createModel.AccountType</h3>
+                    @{var info = _types.FirstOrDefault(t => t.Key == _createModel.AccountType);}
+                    @if (info is not null)
+                    {
+                        <div style="text-align:center;padding:0.75rem 0 1rem;">
+                            <div style="font-size:2.5rem;">@info.Icon</div>
+                            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.7;">@info.Detail</p>
+                        </div>
+                        @foreach (var f in info.Features)
+                        {
+                            <div class="tip-item"><span class="tip-num">✓</span><p>@f</p></div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Account exists — show full account overview -->
+        <div class="dash-welcome-row">
+            <div>
+                <h1 class="dash-welcome-title">My Account</h1>
+                <p class="dash-welcome-sub">Your account overview and details.</p>
+            </div>
+            <button class="btn-apply" @onclick="() => _showCreate = true">+ Open Another Account</button>
+        </div>
+
+        <!-- Account Hero Card -->
+        <div class="account-card" style="margin-bottom:1.25rem;">
+            <div class="account-card-header">
+                <div>
+                    <span class="account-card-label">@_account!.AccountType Account</span>
+                    <p style="font-size:0.7rem;opacity:0.6;margin-top:0.2rem;">Opened @_account.CreatedAt.ToString("MMM dd, yyyy")</p>
+                </div>
+                <div style="text-align:right;">
+                    <span class="badge-active">@_account.Status</span>
+                </div>
+            </div>
+            <div class="account-card-body">
+                <div>
+                    <p class="ac-bal-label">
+                        Available Balance
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" style="margin-left:4px;cursor:pointer;" @onclick="ToggleBalance">
+                            @if (_hideBalance)
+                            {
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+                            }
+                            else
+                            {
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            }
+                        </svg>
+                    </p>
+                    @if (_hideBalance)
+                    {
+                        <h2 class="ac-balance">NPR ••••••</h2>
+                    }
+                    else
+                    {
+                        <h2 class="ac-balance">NPR @_account.Balance.ToString("N2")</h2>
+                    }
+                    <div class="ac-live-tag"><span class="status-dot green"></span> Live balance (via SignalR)</div>
+                </div>
+                <div class="ac-meta">
+                    <p class="ac-meta-label">Account Number</p>
+                    <p class="ac-meta-value">@_account.AccountNumber</p>
+                    <p class="ac-meta-label" style="margin-top:0.75rem;">Account Holder</p>
+                    <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);font-weight:500;">@_account.CustomerName</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row" style="margin-bottom:1.25rem;">
+            <div class="stat-card">
+                <div class="stat-icon green-bg">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00C07F" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <div>
+                    <p class="stat-label">Total Sent</p>
+                    <p class="stat-value">NPR @_sent.ToString("N2")</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue-bg">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#4FC3F7" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+                </div>
+                <div>
+                    <p class="stat-label">Total Received</p>
+                    <p class="stat-value">NPR @_received.ToString("N2")</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple-bg">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#A78BFA" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                    <p class="stat-label">Total Transactions</p>
+                    <p class="stat-value">@_txCount</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Details + Recent Transactions -->
+        <div class="dash-grid">
+            <div class="dash-left">
+                <div class="section-card">
+                    <h3 class="section-title">Account Information</h3>
+                    <div class="tx-detail-grid">
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Account ID</span>
+                            <span class="tx-mono" style="font-size:0.75rem;">@_account.AccountId</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Account Number</span>
+                            <span style="font-weight:700;font-size:0.9rem;letter-spacing:1px;">@_account.AccountNumber</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Account Type</span>
+                            <span class="badge-status badge-completed">@_account.AccountType</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Status</span>
+                            <span class="badge-status @(_account.Status == "Active" ? "badge-completed" : "badge-pending")">@_account.Status</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Account Holder</span>
+                            <span>@_account.CustomerName</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Email</span>
+                            <span style="color:var(--text-muted);">@_account.CustomerEmail</span>
+                        </div>
+                        <div class="tx-detail-row">
+                            <span class="tx-detail-label">Opened On</span>
+                            <span>@_account.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="section-card">
+                    <div class="rt-header">
+                        <h3 class="section-title" style="margin:0;">Recent Transactions</h3>
+                        <a href="/dashboard/transactions" class="rt-viewall">View all →</a>
+                    </div>
+                    @if (_history is null)
+                    {
+                        <div class="rt-skeleton"></div><div class="rt-skeleton"></div><div class="rt-skeleton"></div>
+                    }
+                    else if (!_history.Transactions.Any())
+                    {
+                        <p style="font-size:0.82rem;color:var(--text-muted);text-align:center;padding:1.5rem 0;">No transactions yet.</p>
+                    }
+                    else
+                    {
+                        @foreach (var tx in _history.Transactions.Take(5))
+                        {
+                            <div class="rt-item">
+                                <div class="rt-item-left">
+                                    <div class="rt-dot @(tx.Direction=="Credit"?"rt-credit":"rt-debit")">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                    </div>
+                                    <div>
+                                        <p class="rt-account">@(tx.Direction=="Debit"?"To":"From"): @tx.ToAccountId.ToString()[..12]</p>
+                                        <p class="rt-time">@tx.CreatedAt.ToString("MMM dd, HH:mm")</p>
+                                    </div>
+                                </div>
+                                <div class="rt-item-right">
+                                    <span class="badge-status @GetStatusClass(tx.Status)">@tx.Status</span>
+                                    <p class="rt-amount @(tx.Direction=="Credit"?"amount-credit":"")">
+                                        @(tx.Direction=="Credit"?"+":"-")NPR @tx.Amount.ToString("N2")
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Right: Quick actions -->
+            <div class="dash-right">
+                <div class="section-card">
+                    <h3 class="section-title">Quick Actions</h3>
+                    <a href="/dashboard/transfer" class="qa-item">
+                        <div class="qa-icon blue-bg">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4FC3F7" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </div>
+                        <div class="qa-text">
+                            <p class="qa-title">Transfer Funds</p>
+                            <p class="qa-sub">Send money instantly</p>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                    <a href="/dashboard/transactions" class="qa-item">
+                        <div class="qa-icon green-bg">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#00C07F" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+                        </div>
+                        <div class="qa-text">
+                            <p class="qa-title">Transaction History</p>
+                            <p class="qa-sub">View all transactions</p>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                    <a href="/dashboard/profile" class="qa-item">
+                        <div class="qa-icon purple-bg">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A78BFA" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="qa-text">
+                            <p class="qa-title">Profile & Security</p>
+                            <p class="qa-sub">Manage your settings</p>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7a9fc4" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                </div>
+
+                <!-- Account Type Badge -->
+                <div class="section-card">
+                    <h3 class="section-title">Account Type</h3>
+                    @{var info = _types.FirstOrDefault(t => t.Key == _account.AccountType);}
+                    @if (info is not null)
+                    {
+                        <div style="text-align:center;padding:0.5rem 0 1rem;">
+                            <div style="font-size:3rem;">@info.Icon</div>
+                            <p style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-top:0.5rem;">@info.Key Account</p>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.3rem;line-height:1.6;">@info.Detail</p>
+                        </div>
+                        @foreach (var f in info.Features)
+                        {
+                            <div class="tip-item"><span class="tip-num">✓</span><p>@f</p></div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private AccountModel?            _account;
+    private TransactionHistoryModel? _history;
+    private CreateAccountModel       _createModel  = new();
+    private bool   _loading       = true;
+    private bool   _showCreate;
+    private bool   _hideBalance;
+    private bool   _createLoading;
+    private string _createError   = string.Empty;
+    private string _createSuccess = string.Empty;
+
+    // Computed stats from transaction history
+    private decimal _sent     => _history?.Transactions.Where(t => t.Direction == "Debit").Sum(t => t.Amount) ?? 0;
+    private decimal _received => _history?.Transactions.Where(t => t.Direction == "Credit").Sum(t => t.Amount) ?? 0;
+    private int     _txCount  => _history?.TotalCount ?? 0;
+
+    private readonly List<AccTypeInfo> _types = new()
+    {
+        new("Saving",  "🏦", "Everyday savings", "Best for personal savings with interest benefits.",
+            new[]{"Interest earned monthly","No minimum balance","Free debit card"}),
+        new("Salary",  "💼", "For salary credits", "Designed for employees receiving regular salary.",
+            new[]{"Auto salary credit","Zero maintenance fee","Overdraft facility"}),
+        new("Current", "🔄", "Business transactions", "High-volume account for businesses.",
+            new[]{"Unlimited transactions","Cheque book facility","Business statements"}),
+        new("Fixed",   "🔒", "Fixed deposit", "Lock funds for a term, earn higher interest.",
+            new[]{"Higher interest rate","Flexible tenure","Auto-renewal option"})
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/auth/login"); return; }
+
+        _account = await DashboardManager.GetMyAccountAsync();
+        if (_account is not null)
+            _history = await DashboardManager.GetTransactionsAsync(1, 10);
+
+        _loading = false;
+        StateHasChanged();
+
+        // Listen for live balance updates
+        SignalRManager.BalanceUpdated += OnBalanceUpdated;
+    }
+
+    private void OnBalanceUpdated(decimal balance)
+    {
+        if (_account is not null) { _account.Balance = balance; InvokeAsync(StateHasChanged); }
+    }
+
+    private async Task HandleCreate()
+    {
+        _createLoading = true;
+        _createError   = string.Empty;
+        _createSuccess = string.Empty;
+
+        var (ok, msg, account) = await DashboardManager.CreateAccountAsync(_createModel);
+        if (ok && account is not null)
+        {
+            _account       = account;
+            _createSuccess = msg;
+            _showCreate    = false;
+            _history       = await DashboardManager.GetTransactionsAsync(1, 10);
+        }
+        else { _createError = msg; }
+
+        _createLoading = false;
+    }
+
+    private void ToggleBalance() => _hideBalance = !_hideBalance;
+
+    private string GetPreview()
+    {
+        var prefix = _createModel.AccountType switch
+        {
+            "Saving" => "SAV", "Salary" => "SAL",
+            "Current" => "CUR", "Fixed" => "FXD", _ => "ACC"
+        };
+        return $"{prefix}{DateTime.Now:yyMMdd}XXXX";
+    }
+
+    private static string GetStatusClass(string s) => s switch
+    { "Completed"=>"badge-completed","Pending"=>"badge-pending","Failed"=>"badge-failed",_=>"" };
+
+    public ValueTask DisposeAsync()
+    {
+        SignalRManager.BalanceUpdated -= OnBalanceUpdated;
+        return ValueTask.CompletedTask;
+    }
+
+    private record AccTypeInfo(string Key, string Icon, string Desc, string Detail, string[] Features);
+}

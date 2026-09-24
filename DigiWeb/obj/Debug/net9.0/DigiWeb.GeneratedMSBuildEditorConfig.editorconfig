@@ -24,6 +24,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/DigitalBankingPlatform/DigiWeb/Components/Layout/DashboardLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcRGFzaGJvYXJkTGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/DigitalBankingPlatform/DigiWeb/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,12 +60,48 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBdXRoXFZlcmlmeUVtYWlsLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcRGFzaGJvYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/FundTransfer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcRnVuZFRyYW5zZmVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/MyAccount.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcTXlBY2NvdW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/Notifications.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcTm90aWZpY2F0aW9ucy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/ProfileSecurity.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcUHJvZmlsZVNlY3VyaXR5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Dashboard/TransactionHistory.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcVHJhbnNhY3Rpb25IaXN0b3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/DigitalBankingPlatform/DigiWeb/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/DigitalBankingPlatform/DigiWeb/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Shared/DashboardSidebar.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGFzaGJvYXJkU2lkZWJhci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/DigitalBankingPlatform/DigiWeb/Components/Shared/DashboardTopbar.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGFzaGJvYXJkVG9wYmFyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/DigitalBankingPlatform/DigiWeb/Components/_Imports.razor]
